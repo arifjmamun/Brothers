@@ -1,0 +1,12 @@
+H:\Projects\MVC5\Brothers\Core\bin\Debug\Core.dll.config
+H:\Projects\MVC5\Brothers\Core\bin\Debug\Core.dll
+H:\Projects\MVC5\Brothers\Core\bin\Debug\Core.pdb
+H:\Projects\MVC5\Brothers\Core\bin\Debug\EntityFramework.dll
+H:\Projects\MVC5\Brothers\Core\bin\Debug\EntityFramework.SqlServer.dll
+H:\Projects\MVC5\Brothers\Core\bin\Debug\EntityFramework.xml
+H:\Projects\MVC5\Brothers\Core\bin\Debug\EntityFramework.SqlServer.xml
+H:\Projects\MVC5\Brothers\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+H:\Projects\MVC5\Brothers\Core\obj\Debug\Core.dll
+H:\Projects\MVC5\Brothers\Core\obj\Debug\Core.pdb
+H:\Projects\MVC5\Brothers\Core\obj\Debug\Core.Migrations.Init.resources
+H:\Projects\MVC5\Brothers\Core\obj\Debug\Core.csproj.GenerateResource.Cache
