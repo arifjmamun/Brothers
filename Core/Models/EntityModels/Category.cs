@@ -15,7 +15,7 @@ namespace Core.Models.EntityModels
         [Required]
         [Display(Name = "Category")]
         [Column(TypeName = "varchar")]
-        [StringLength(32, MinimumLength = 2)]
+        [StringLength(32, MinimumLength = 2, ErrorMessage = "Category Name min and max length: 2 and 32")]
         public string CategoryName { get; set; }
     }
 }
