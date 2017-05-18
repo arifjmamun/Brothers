@@ -1,0 +1,87 @@
+﻿@using System.Web.UI.WebControls
+@model Core.Models.EntityModels.Upload
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var drive = ViewBag.Drives as IEnumerable<SelectListItem>;
+    var category = ViewBag.Category as IEnumerable<SelectListItem>;
+    var subCategory = ViewBag.SubCategory as IEnumerable<SelectListItem>;
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create","Uploads",FormMethod.Post, new{enctype="multipart/form-data"})) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>Upload</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Drive, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Drive, drive, "Select One", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Drive, "", new {@class = "text-danger"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @*@Html.DropDownList("CategoryId", (IEnumerable<SelectListItem>)ViewData["Category"], "Select One", new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.CategoryId, category, "Select One", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CategoryId, "", new {@class = "text-danger"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SubCategoryId, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.CategoryId, subCategory, "Select One", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SubCategoryId, "", new {@class = "text-danger"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Thumbnail, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <input type="file" name="thumbImage" id="thumbImage" class="form-control" />
+                @Html.ValidationMessage("thumbImage", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="control-label col-md-2">Select Files</label>
+            <div class="col-md-10">
+                <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" required multiple />
+                @Html.ValidationMessage("SelectedFiles", "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

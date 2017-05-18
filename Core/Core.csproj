@@ -49,16 +49,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BLL\CategoryManager.cs" />
+    <Compile Include="BLL\SubCategoryManager.cs" />
     <Compile Include="Context\BrothersContext.cs" />
     <Compile Include="DAL\CategoryGateway.cs" />
+    <Compile Include="DAL\SubCategoryGateway.cs" />
+    <Compile Include="Helper\IntExtensions.cs" />
     <Compile Include="Migrations\201705171710409_Init.cs" />
     <Compile Include="Migrations\201705171710409_Init.Designer.cs">
       <DependentUpon>201705171710409_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705181252543_UploadModelChange.cs" />
+    <Compile Include="Migrations\201705181252543_UploadModelChange.Designer.cs">
+      <DependentUpon>201705181252543_UploadModelChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705181607509_UploadModelChangedToAcceptFile.cs" />
+    <Compile Include="Migrations\201705181607509_UploadModelChangedToAcceptFile.Designer.cs">
+      <DependentUpon>201705181607509_UploadModelChangedToAcceptFile.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EntityModels\Category.cs" />
     <Compile Include="Models\EntityModels\FileInfo.cs" />
     <Compile Include="Models\EntityModels\SubCategory.cs" />
+    <Compile Include="Models\EntityModels\Test.cs" />
     <Compile Include="Models\EntityModels\Upload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -72,6 +84,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201705171710409_Init.resx">
       <DependentUpon>201705171710409_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705181252543_UploadModelChange.resx">
+      <DependentUpon>201705181252543_UploadModelChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705181607509_UploadModelChangedToAcceptFile.resx">
+      <DependentUpon>201705181607509_UploadModelChangedToAcceptFile.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

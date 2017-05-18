@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Net;
 using System.Web.Mvc;
-using Core.Context;
+using Core.BLL;
 using Core.Models.EntityModels;
 
 namespace Web.Controllers
 {
     public class SubCategoriesController : Controller
     {
-        private BrothersContext db = new BrothersContext();
+
+        private readonly SubCategoryManager _categoryManager = new SubCategoryManager();
 
         // GET: SubCategories
         public ActionResult Index()
         {
-            return View(db.SubCategories.ToList());
+            return View(_categoryManager.GetAll());
         }
 
         // GET: SubCategories/Details/5
@@ -28,7 +23,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubCategory subCategory = db.SubCategories.Find(id);
+            SubCategory subCategory = _categoryManager.GetById((int) id);
             if (subCategory == null)
             {
                 return HttpNotFound();
@@ -51,8 +46,7 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.SubCategories.Add(subCategory);
-                db.SaveChanges();
+                _categoryManager.Insert(subCategory);
                 return RedirectToAction("Index");
             }
 
@@ -66,7 +60,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubCategory subCategory = db.SubCategories.Find(id);
+            SubCategory subCategory = _categoryManager.GetById((int) id);
             if (subCategory == null)
             {
                 return HttpNotFound();
@@ -83,8 +77,7 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(subCategory).State = EntityState.Modified;
-                db.SaveChanges();
+                _categoryManager.Edit(subCategory);
                 return RedirectToAction("Index");
             }
             return View(subCategory);
@@ -97,7 +90,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SubCategory subCategory = db.SubCategories.Find(id);
+            SubCategory subCategory = _categoryManager.GetById((int) id);
             if (subCategory == null)
             {
                 return HttpNotFound();
@@ -110,19 +103,9 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            SubCategory subCategory = db.SubCategories.Find(id);
-            db.SubCategories.Remove(subCategory);
-            db.SaveChanges();
+            _categoryManager.Delete(id);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

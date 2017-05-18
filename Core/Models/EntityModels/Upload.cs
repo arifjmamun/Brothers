@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Models.EntityModels
 {
@@ -15,11 +12,11 @@ namespace Core.Models.EntityModels
         [Required]
         [Column(TypeName = "varchar")]
         [StringLength(5)]
-        public string Drrive { get; set; }
+        public string Drive { get; set; }
         
         [Required]
         [Column(TypeName = "varchar")]
-        [StringLength(150, MinimumLength = 2)]
+        [StringLength(150, MinimumLength = 2, ErrorMessage = "Min and Max value: 2 and 150")]
         public string Title { get; set; }
 
         [Display(Name = "Category")]
@@ -36,7 +33,7 @@ namespace Core.Models.EntityModels
 
         public List<FileInfo> FileInfos { get; set; }
 
-        public byte? Thumbnail { get; set; }
+        public virtual byte[] Thumbnail { get; set; }
 
         public DateTime PublishDate { get; set; }
 
