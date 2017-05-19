@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -24,11 +23,19 @@ namespace Web.Controllers
 
         #region Private Methods
 
-        private void SetDropDownData(Upload upload)
+        private void SetDropDownPostBackData(Upload upload)
         {
             ViewBag.Drives = new SelectList(_uploadManager.GetDrives(), "Name", "VolumeLabel", upload.Drive);
             ViewBag.Category = new SelectList(_categoryManager.GetAll(), "CategoryId", "CategoryName", upload.CategoryId);
-            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName", upload.SubCategoryId);
+            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName",
+                upload.SubCategoryId);
+        }
+
+        private void SetDropDownData()
+        {
+            ViewBag.Drives = new SelectList(_uploadManager.GetDrives(), "Name", "VolumeLabel");
+            ViewBag.Category = new SelectList(_categoryManager.GetAll(), "CategoryId", "CategoryName");
+            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName");
         }
 
         #endregion
@@ -47,7 +54,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Upload upload = _uploadManager.GetById((int)id);
+            Upload upload = _uploadManager.GetById((int) id);
             if (upload == null)
             {
                 return HttpNotFound();
@@ -58,9 +65,7 @@ namespace Web.Controllers
         // GET: Uploads/Create
         public ActionResult Create()
         {
-            ViewBag.Drives = new SelectList(_uploadManager.GetDrives(), "Name", "VolumeLabel");
-            ViewBag.Category = new SelectList(_categoryManager.GetAll(), "CategoryId", "CategoryName");
-            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName");
+            SetDropDownData();
             return View();
         }
 
@@ -69,32 +74,73 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,UploadPath,Thumbnail,PublishDate,LastUpdate")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
+        public ActionResult Create(
+            [Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,Thumbnail")] Upload upload,
+            IEnumerable<HttpPostedFileBase> selectedFiles)
         {
-
+            if (selectedFiles == null) ModelState.AddModelError("selectedFiles", "You must select files to upload.");
             HttpPostedFileBase thumbnail = Request.Files["thumbImage"];
 
 
             if (ModelState.IsValid)
             {
-                if (thumbnail != null)
+                upload.UploadPath = _uploadManager.GetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                if (thumbnail.ContentLength > 0)
                 {
-                    var image = new Image(thumbnail.FileName, thumbnail.ContentLength);
-                    var alert = _uploadManager.IsImageValid(image);
-                    if (!alert.Flag)
+                    var image = new UploadedFile(thumbnail.FileName, thumbnail.ContentLength);
+                    var alertThumb = _uploadManager.IsImageValid(image);
+                    if (!alertThumb.Flag)
                     {
-                        ViewBag.Alert = alert;
-                        SetDropDownData(upload);
+                        ViewBag.Alert = alertThumb;
+                        SetDropDownPostBackData(upload);
                         return View(upload);
                     }
+                    using (var reader = new BinaryReader(thumbnail.InputStream))
+                    {
+                        upload.Thumbnail = reader.ReadBytes(thumbnail.ContentLength);
+                    }
                 }
-                var files = Request.Files["SelectedFiles"];
-                var uploadPath = db.Categories.Where(x => x.CategoryId == upload.CategoryId).Select(x => x.CategoryName).FirstOrDefault();
-                db.Uploads.Add(upload);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+
+                var files = selectedFiles.Select(x => new UploadedFile(x.FileName, x.ContentLength)).ToList();
+                var alertFiles = _uploadManager.IsSelectedFilesValid(files);
+                if (!alertFiles.Flag)
+                {
+                    ViewBag.Alert = alertFiles;
+                    SetDropDownPostBackData(upload);
+                    return View(upload);
+                }
+                else
+                {
+                    string path = upload.Drive + upload.UploadPath;
+                    if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                    foreach (var file in selectedFiles)
+                    {
+                        try
+                        {
+                            string fileName = upload.Title + Path.GetExtension(file.FileName);
+                            file.SaveAs(path + @"\" + fileName);
+                            upload.FileInfos.Add(new Core.Models.EntityModels.FileInfo { FileName = fileName });
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+                        
+                    }
+                }
+                
+                var alertInsert = _uploadManager.Insert(upload);
+                ViewBag.Alert = alertInsert;
+                if (!alertInsert.Flag)
+                {
+                    SetDropDownPostBackData(upload);
+                    return View(upload);
+                }
+                SetDropDownData();
+                return View();
             }
-            SetDropDownData(upload);
+
+            SetDropDownPostBackData(upload);
             return View(upload);
         }
 

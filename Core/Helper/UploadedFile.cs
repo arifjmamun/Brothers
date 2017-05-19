@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Core.Helper
 {
-    public class Image
+    public class UploadedFile
     {
-        public Image(string name, int length)
+        public UploadedFile(string name, int length)
         {
             Name = name;
             Length = length;
             Type = Path.GetExtension(Name.ToLower());
         }
-        public static List<string> AllowedItems = new List<string>
+        public static List<string> AllowedImages = new List<string>
         {
             ".jpg",".png",".gif",".bmp",".jpeg"
         };

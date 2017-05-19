@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,28 @@ namespace Core.BLL
     public class UploadManager
     {
         private readonly UploadGateway _uploadGateway = new UploadGateway();
+
+        public Alert Insert(Upload upload)
+        {
+            upload.PublishDate = DateTime.Now;
+            upload.LastUpdate = DateTime.Now;
+            bool isSaved = _uploadGateway.Insert(upload);
+            if (isSaved) return new Alert
+            {
+                Flag = true,
+                CssClass = Alert.SuccessClass,
+                Type = Alert.SuccessText,
+                Msg = "Files Uploaded!"
+            };
+            return new Alert
+            {
+                Flag = false,
+                CssClass = Alert.ErrorClass,
+                Type = Alert.ErrorText,
+                Msg = "Unexpected Error! Try Again!"
+            };
+            
+        }
 
         public List<Upload> GetAll()
         {
@@ -26,22 +49,20 @@ namespace Core.BLL
         {
             return DriveInfo.GetDrives()
                 .Where(x => x.IsReady && x.DriveType.ToString() == "Fixed")
-                .Select(x => new { VolumeLabel = !string.IsNullOrEmpty(x.VolumeLabel) ? x.VolumeLabel : x.Name, x.Name}).ToList();
+                .Select(x => new { VolumeLabel = !string.IsNullOrEmpty(x.VolumeLabel) ? x.VolumeLabel : x.Name, x.Name }).ToList();
         }
 
-
-
-        public Alert IsImageValid(Image image)
+        public Alert IsImageValid(UploadedFile image)
         {
 
-            if (Image.AllowedItems.IndexOf(image.Type) == -1)
+            if (UploadedFile.AllowedImages.IndexOf(image.Type) == -1)
             {
                 return new Alert
                 {
                     Flag = false,
                     CssClass = Alert.ErrorClass,
                     Type = Alert.ErrorText,
-                    Msg = image.Type + " file not allowed! Only these " + string.Join(", ", Image.AllowedItems) + " files are allowed!"
+                    Msg = image.Type + " file not allowed! Only these " + string.Join(", ", UploadedFile.AllowedImages) + " files are allowed!"
                 };
             }
 
@@ -57,7 +78,55 @@ namespace Core.BLL
                 };
             }
 
-            return new Alert{Flag = true};
+            return new Alert { Flag = true };
+        }
+
+        public Alert IsSelectedFilesValid(List<UploadedFile> files)
+        {
+            if (files.Count(x => x.Length < 1) != 0)
+            {
+                var emptyFiles = files.Where(x => x.Length < 1).Select(x => x.Name).ToList();
+                return new Alert
+                {
+                    Flag = false,
+                    CssClass = Alert.ErrorClass,
+                    Type = Alert.ErrorText,
+                    Msg = "The" + string.Join(", ", emptyFiles) + " files are empty!"
+                };
+            }
+
+            if (files.Count(x => x.Length > 4294967295) != 0)
+            {
+                //3.99 GB = 4294967295
+                var largerFiles = files.Where(x => x.Length > 4294967295).Select(x => x.Name).ToList();
+                return new Alert
+                {
+                    Flag = false,
+                    CssClass = Alert.WarningClass,
+                    Type = Alert.WarningText,
+                    Msg = "The" + string.Join(", ", largerFiles) + " files are larger than 3.99 GB!"
+                };
+            }
+
+            if (files.Sum(x => x.Length) > 107374182400)
+            {
+                return new Alert
+                {
+                    Flag = false,
+                    CssClass = Alert.ErrorClass,
+                    Type = Alert.ErrorText,
+                    Msg = "You can only upload at a time maximum 100GB!"
+                };
+            }
+
+            return new Alert { Flag = true };
+        }
+
+
+        public string GetUploadPath(int categoryId, int? subCategoryId, string title)
+        {
+            if (subCategoryId == null) return _uploadGateway.GetUploadPath(categoryId, title);
+            return _uploadGateway.GetUploadPath(categoryId, (int)subCategoryId, title);
         }
     }
 }

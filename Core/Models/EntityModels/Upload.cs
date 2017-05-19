@@ -7,6 +7,11 @@ namespace Core.Models.EntityModels
 {
     public class Upload
     {
+        public Upload()
+        {
+            FileInfos = new List<FileInfo>();
+        }
+
         public int UploadId { get; set; }
 
         [Required]
