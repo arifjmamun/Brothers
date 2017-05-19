@@ -50,10 +50,15 @@
   <ItemGroup>
     <Compile Include="BLL\CategoryManager.cs" />
     <Compile Include="BLL\SubCategoryManager.cs" />
+    <Compile Include="BLL\UploadManager.cs" />
     <Compile Include="Context\BrothersContext.cs" />
     <Compile Include="DAL\CategoryGateway.cs" />
     <Compile Include="DAL\SubCategoryGateway.cs" />
+    <Compile Include="DAL\UploadGateway.cs" />
+    <Compile Include="Helper\Alert.cs" />
+    <Compile Include="Helper\Image.cs" />
     <Compile Include="Helper\IntExtensions.cs" />
+    <Compile Include="Helper\Msg.cs" />
     <Compile Include="Migrations\201705171710409_Init.cs" />
     <Compile Include="Migrations\201705171710409_Init.Designer.cs">
       <DependentUpon>201705171710409_Init.cs</DependentUpon>

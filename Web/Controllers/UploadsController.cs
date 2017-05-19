@@ -7,7 +7,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Core.BLL;
 using Core.Context;
+using Core.Helper;
 using Core.Models.EntityModels;
 
 namespace Web.Controllers
@@ -16,10 +18,25 @@ namespace Web.Controllers
     {
         private BrothersContext db = new BrothersContext();
 
+        private readonly UploadManager _uploadManager = new UploadManager();
+        private readonly CategoryManager _categoryManager = new CategoryManager();
+        private readonly SubCategoryManager _subCategoryManager = new SubCategoryManager();
+
+        #region Private Methods
+
+        private void SetDropDownData(Upload upload)
+        {
+            ViewBag.Drives = new SelectList(_uploadManager.GetDrives(), "Name", "VolumeLabel", upload.Drive);
+            ViewBag.Category = new SelectList(_categoryManager.GetAll(), "CategoryId", "CategoryName", upload.CategoryId);
+            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName", upload.SubCategoryId);
+        }
+
+        #endregion
+
         // GET: Uploads
         public ActionResult Index()
         {
-            var uploads = db.Uploads.Include(u => u.Category).Include(u => u.SubCategory);
+            var uploads = _uploadManager.GetAll();
             return View(uploads.ToList());
         }
 
@@ -30,7 +47,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Upload upload = db.Uploads.Find(id);
+            Upload upload = _uploadManager.GetById((int)id);
             if (upload == null)
             {
                 return HttpNotFound();
@@ -41,13 +58,9 @@ namespace Web.Controllers
         // GET: Uploads/Create
         public ActionResult Create()
         {
-            var drives = DriveInfo.GetDrives().Where(x => x.IsReady && x.DriveType.ToString() == "Fixed").Select(x => new
-            {
-                VolumeLabel = !string.IsNullOrEmpty(x.VolumeLabel) ? x.VolumeLabel : x.Name, x.Name
-            }).ToList();
-            ViewBag.Drives = new SelectList(drives, "Name", "VolumeLabel");
-            ViewBag.Category = new SelectList(db.Categories, "CategoryId", "CategoryName");
-            ViewBag.SubCategory = new SelectList(db.SubCategories, "SubCategoryId", "SubCategoryName");
+            ViewBag.Drives = new SelectList(_uploadManager.GetDrives(), "Name", "VolumeLabel");
+            ViewBag.Category = new SelectList(_categoryManager.GetAll(), "CategoryId", "CategoryName");
+            ViewBag.SubCategory = new SelectList(_subCategoryManager.GetAll(), "SubCategoryId", "SubCategoryName");
             return View();
         }
 
@@ -56,21 +69,32 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,UploadPath,Thumbnail,PublishDate,LastUpdate")] Upload upload)
+        public ActionResult Create([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,UploadPath,Thumbnail,PublishDate,LastUpdate")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
+
+            HttpPostedFileBase thumbnail = Request.Files["thumbImage"];
+
+
             if (ModelState.IsValid)
             {
+                if (thumbnail != null)
+                {
+                    var image = new Image(thumbnail.FileName, thumbnail.ContentLength);
+                    var alert = _uploadManager.IsImageValid(image);
+                    if (!alert.Flag)
+                    {
+                        ViewBag.Alert = alert;
+                        SetDropDownData(upload);
+                        return View(upload);
+                    }
+                }
                 var files = Request.Files["SelectedFiles"];
                 var uploadPath = db.Categories.Where(x => x.CategoryId == upload.CategoryId).Select(x => x.CategoryName).FirstOrDefault();
                 db.Uploads.Add(upload);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            var drives = DriveInfo.GetDrives().Where(x => x.IsReady && x.DriveType.ToString() == "Fixed")
-                        .Select(x => new { VolumeLabel = !string.IsNullOrEmpty(x.VolumeLabel) ? x.VolumeLabel : x.Name, x.Name }).ToList();
-            ViewBag.Drives = new SelectList(drives, "Name", "VolumeLabel", upload.Drive);
-            ViewBag.Category = new SelectList(db.Categories, "CategoryId", "CategoryName", upload.CategoryId);
-            ViewBag.SubCategory = new SelectList(db.SubCategories, "SubCategoryId", "SubCategoryName", upload.SubCategoryId);
+            SetDropDownData(upload);
             return View(upload);
         }
 

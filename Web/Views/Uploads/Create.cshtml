@@ -1,4 +1,5 @@
 ﻿@using System.Web.UI.WebControls
+@using Core.Helper
 @model Core.Models.EntityModels.Upload
 
 @{
@@ -8,6 +9,7 @@
     var drive = ViewBag.Drives as IEnumerable<SelectListItem>;
     var category = ViewBag.Category as IEnumerable<SelectListItem>;
     var subCategory = ViewBag.SubCategory as IEnumerable<SelectListItem>;
+    var alert = (Alert) ViewBag.Alert;
 }
 
 <h2>Create</h2>
@@ -16,7 +18,15 @@
 @using (Html.BeginForm("Create","Uploads",FormMethod.Post, new{enctype="multipart/form-data"})) 
 {
     @Html.AntiForgeryToken()
-    
+
+    if (alert!=null)
+    {
+        <div class="@alert.CssClass">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>@alert.Type</strong> @alert.Msg
+        </div>
+    }
+
     <div class="form-horizontal">
         <h4>Upload</h4>
         <hr />
