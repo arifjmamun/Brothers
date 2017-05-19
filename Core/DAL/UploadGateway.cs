@@ -55,5 +55,13 @@ namespace Core.DAL
                 return categoryName + @"\" + subCategoryName + @"\" + title + @"\";
             }
         }
+
+        public bool IsPathExists(string directoryPath)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                return db.Uploads.FirstOrDefault(x => x.DirectoryPath.ToLower() == directoryPath.ToLower())!=null;
+            }
+        }
     }
 }

@@ -74,9 +74,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(
-            [Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,Thumbnail")] Upload upload,
-            IEnumerable<HttpPostedFileBase> selectedFiles)
+        public ActionResult Create([Bind(Include = "UploadId,Drive,Title,CategoryId,DirectoryPath,SubCategoryId,Thumbnail")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
             if (selectedFiles == null) ModelState.AddModelError("selectedFiles", "You must select files to upload.");
             HttpPostedFileBase thumbnail = Request.Files["thumbImage"];
@@ -84,7 +82,16 @@ namespace Web.Controllers
 
             if (ModelState.IsValid)
             {
-                upload.UploadPath = _uploadManager.GetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                upload.DirectoryPath = _uploadManager.GetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                
+                var alertDirectory = _uploadManager.IsPathExists(upload.DirectoryPath);
+                if (!alertDirectory.Flag)
+                {
+                    ViewBag.Alert = alertDirectory;
+                    SetDropDownPostBackData(upload);
+                    return View(upload);
+                }
+
                 if (thumbnail.ContentLength > 0)
                 {
                     var image = new UploadedFile(thumbnail.FileName, thumbnail.ContentLength);
@@ -111,7 +118,7 @@ namespace Web.Controllers
                 }
                 else
                 {
-                    string path = upload.Drive + upload.UploadPath;
+                    string path = upload.Drive + upload.DirectoryPath;
                     if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                     foreach (var file in selectedFiles)
                     {
@@ -137,6 +144,7 @@ namespace Web.Controllers
                     return View(upload);
                 }
                 SetDropDownData();
+                ModelState.Clear(); // Clearing ModelState
                 return View();
             }
 
@@ -166,7 +174,7 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,UploadPath,Thumbnail,PublishDate,LastUpdate")] Upload upload)
+        public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail,PublishDate,LastUpdate")] Upload upload)
         {
             if (ModelState.IsValid)
             {

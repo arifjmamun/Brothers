@@ -71,6 +71,14 @@
     <Compile Include="Migrations\201705181607509_UploadModelChangedToAcceptFile.Designer.cs">
       <DependentUpon>201705181607509_UploadModelChangedToAcceptFile.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705191708052_UploadModelChangeMadeUniqueColumn.cs" />
+    <Compile Include="Migrations\201705191708052_UploadModelChangeMadeUniqueColumn.Designer.cs">
+      <DependentUpon>201705191708052_UploadModelChangeMadeUniqueColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705191822333_DirectoryPathSetToNullable.cs" />
+    <Compile Include="Migrations\201705191822333_DirectoryPathSetToNullable.Designer.cs">
+      <DependentUpon>201705191822333_DirectoryPathSetToNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\EntityModels\Category.cs" />
     <Compile Include="Models\EntityModels\FileInfo.cs" />
@@ -95,6 +103,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705181607509_UploadModelChangedToAcceptFile.resx">
       <DependentUpon>201705181607509_UploadModelChangedToAcceptFile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705191708052_UploadModelChangeMadeUniqueColumn.resx">
+      <DependentUpon>201705191708052_UploadModelChangeMadeUniqueColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705191822333_DirectoryPathSetToNullable.resx">
+      <DependentUpon>201705191822333_DirectoryPathSetToNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

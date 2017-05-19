@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 
 namespace Core.Models.EntityModels
 {
@@ -20,8 +21,8 @@ namespace Core.Models.EntityModels
         public string Drive { get; set; }
         
         [Required]
-        [Column(TypeName = "varchar")]
         [StringLength(150, MinimumLength = 2, ErrorMessage = "Min and Max value: 2 and 150")]
+        [Column(TypeName = "varchar")]
         public string Title { get; set; }
 
         [Display(Name = "Category")]
@@ -34,7 +35,9 @@ namespace Core.Models.EntityModels
         [ForeignKey("SubCategoryId")]
         public virtual SubCategory SubCategory { get; set; }
 
-        public string UploadPath { get; set; }
+        [StringLength(255)]
+        [Index(IsUnique = true)]
+        public string DirectoryPath { get; set; }
 
         public List<FileInfo> FileInfos { get; set; }
 

@@ -128,5 +128,21 @@ namespace Core.BLL
             if (subCategoryId == null) return _uploadGateway.GetUploadPath(categoryId, title);
             return _uploadGateway.GetUploadPath(categoryId, (int)subCategoryId, title);
         }
+
+        public Alert IsPathExists(string directoryPath)
+        {
+            if (_uploadGateway.IsPathExists(directoryPath))
+            {
+                return new Alert
+                {
+                    Flag = false,
+                    CssClass = Alert.WarningClass,
+                    Type = Alert.WarningText,
+                    Msg = "The directory path alredy contains file!"
+                };
+            }
+
+            return new Alert { Flag = true };
+        }
     }
 }
