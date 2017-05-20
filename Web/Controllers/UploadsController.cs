@@ -54,7 +54,7 @@ namespace Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Upload upload = _uploadManager.GetById((int) id);
+            Upload upload = _uploadManager.GetById((int)id);
             if (upload == null)
             {
                 return HttpNotFound();
@@ -83,7 +83,7 @@ namespace Web.Controllers
             if (ModelState.IsValid)
             {
                 upload.DirectoryPath = _uploadManager.GetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
-                
+
                 var alertDirectory = _uploadManager.IsPathExists(upload.DirectoryPath);
                 if (!alertDirectory.Flag)
                 {
@@ -132,10 +132,10 @@ namespace Web.Controllers
                         {
                             throw ex;
                         }
-                        
+
                     }
                 }
-                
+
                 var alertInsert = _uploadManager.Insert(upload);
                 ViewBag.Alert = alertInsert;
                 if (!alertInsert.Flag)
@@ -160,10 +160,12 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Upload upload = db.Uploads.Find(id);
+
             if (upload == null)
             {
                 return HttpNotFound();
             }
+            upload.FileInfos = db.FileInfos.Where(x => x.UploadId == (int) id).ToList();
             SetDropDownPostBackData(upload);
             return View(upload);
         }

@@ -1,4 +1,5 @@
-﻿@using Core.Helper
+﻿@using System.Collections
+@using Core.Helper
 @model Core.Models.EntityModels.Upload
 
 @{
@@ -80,6 +81,23 @@
     </div>
 }
 
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="fa fa-folder"></span> @Model.Title
+        <a href="#" class="pull-right">Download All [.zip]</a>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            @foreach (var file in Model.FileInfos)
+            {
+                <li class="list-group-item">
+                    <span class="fa fa-file-movie-o"></span> @file.FileName
+                    <span></span>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
