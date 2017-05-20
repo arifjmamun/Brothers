@@ -10,6 +10,11 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+
+<div id="popup" class="pop-up thumbnail">
+    <img id="popupImage" alt="Popup image" />
+</div>
+
 <table class="table">
     <tr>
         <th>
@@ -39,45 +44,85 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category.CategoryName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SubCategory.SubCategoryName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Drive)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DirectoryPath)
-        </td>
-        <td>
-            @if (item.Thumbnail != null)
-            {
-                <img src="data:image;base64,@System.Convert.ToBase64String(item.Thumbnail)" alt="Alternate Text" width="200" height="200"/>
-            }
-            else
-            {
-                <img src="~/Images/empty_thumb.jpg" alt="Alternate Text" width="200" height="200" />
-            }
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PublishDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.LastUpdate)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.UploadId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.UploadId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.UploadId })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        var emptyImage = "../Images/empty_thumb.jpg";
+        var image = item.Thumbnail != null ? "data:image;base64,"+@System.Convert.ToBase64String(item.Thumbnail) : emptyImage;
+        <tr class=" hv-image" data-image="@image">
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubCategory.SubCategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Drive)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DirectoryPath)
+            </td>
+            @*<td>
+                <div class="thumbnail">
+                    @if (item.Thumbnail != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Thumbnail)" alt="Alternate Text" />
+                    }
+                    else
+                    {
+                        <img src="~/Images/empty_thumb.jpg" alt="Alternate Text" />
+                    }
+                </div>
+
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastUpdate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {id = item.UploadId}) |
+                @Html.ActionLink("Details", "Details", new {id = item.UploadId}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.UploadId})
+            </td>
+        </tr>
+    }
 
 </table>
+    @section styles
+    {
+        <style>
+            #popup {
+                transition: opacity .5s ease-out;
+                -moz-transition: opacity .5s ease-out;
+                -webkit-transition: opacity .5s ease-out;
+                -o-transition: opacity .5s ease-out;
+            }
+            #popupImage {
+                max-height: 300px;
+            }
+        </style>
+    }
+@section scripts
+{
+    <script type="text/javascript">
+        $('#popup').hide();
+        $('.hv-image').on('mouseover', function(e) {
+            e.preventDefault();
+            var imageSource = $(this).attr("data-image");
+            $("#popupImage").attr('src', imageSource);
+            $('#popup').css('position', 'absolute');
+            $('#popup').css('overflow', 'hidden');
+            $('#popup').css('top', e.pageY);
+            $('#popup').css('left', e.pageX);
+            $('#popup').show().fadeIn('slow', function() {});
+        });
+
+        $('.hv-image').on('mouseout', function(e) {
+            $('#popup').hide().fadeOut('slow', function() {});
+        });
+    </script>
+}
