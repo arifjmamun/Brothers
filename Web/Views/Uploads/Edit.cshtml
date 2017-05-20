@@ -1,8 +1,14 @@
-﻿@model Core.Models.EntityModels.Upload
+﻿@using Core.Helper
+@model Core.Models.EntityModels.Upload
 
 @{
     ViewBag.Title = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var drive = ViewBag.Drives as IEnumerable<SelectListItem>;
+    var category = ViewBag.Category as IEnumerable<SelectListItem>;
+    var subCategory = ViewBag.SubCategory as IEnumerable<SelectListItem>;
+    var alert = (Alert)ViewBag.Alert;
 }
 
 <h2>Edit</h2>
@@ -19,9 +25,9 @@
         @Html.HiddenFor(model => model.UploadId)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Drive, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Drive, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Drive, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.DropDownListFor(model => model.Drive, drive, "Select One", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Drive, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -35,50 +41,34 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.CategoryId, "CategoryId", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.CategoryId, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.CategoryId, category, "Select One", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.SubCategoryId, "SubCategoryId", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.SubCategoryId, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("SubCategoryId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.SubCategoryId, subCategory, "Select One", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SubCategoryId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.DirectoryPath, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Thumbnail, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DirectoryPath, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DirectoryPath, "", new { @class = "text-danger" })
+                <input type="file" name="thumbImage" id="thumbImage" class="form-control" />
+                @Html.ValidationMessage("thumbImage", "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Thumbnail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label class="control-label col-md-2">Select Files</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Thumbnail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Thumbnail, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.PublishDate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PublishDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PublishDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.LastUpdate, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.LastUpdate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.LastUpdate, "", new { @class = "text-danger" })
+                <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" multiple />
+                @Html.ValidationMessage("SelectedFiles", "", new { @class = "text-danger" })
             </div>
         </div>
 

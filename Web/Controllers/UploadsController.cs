@@ -164,8 +164,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryId = new SelectList(db.Categories, "CategoryId", "CategoryName", upload.CategoryId);
-            ViewBag.SubCategoryId = new SelectList(db.SubCategories, "SubCategoryId", "SubCategoryName", upload.SubCategoryId);
+            SetDropDownPostBackData(upload);
             return View(upload);
         }
 
@@ -174,16 +173,15 @@ namespace Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail,PublishDate,LastUpdate")] Upload upload)
+        public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(upload).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Index");
             }
-            ViewBag.CategoryId = new SelectList(db.Categories, "CategoryId", "CategoryName", upload.CategoryId);
-            ViewBag.SubCategoryId = new SelectList(db.SubCategories, "SubCategoryId", "SubCategoryName", upload.SubCategoryId);
+            SetDropDownPostBackData(upload);
             return View(upload);
         }
 
