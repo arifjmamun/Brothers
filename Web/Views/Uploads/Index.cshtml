@@ -57,7 +57,14 @@
             @Html.DisplayFor(modelItem => item.DirectoryPath)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Thumbnail)
+            @if (item.Thumbnail != null)
+            {
+                <img src="data:image;base64,@System.Convert.ToBase64String(item.Thumbnail)" alt="Alternate Text" width="200" height="200"/>
+            }
+            else
+            {
+                <img src="~/Images/empty_thumb.jpg" alt="Alternate Text" width="200" height="200" />
+            }
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.PublishDate)
