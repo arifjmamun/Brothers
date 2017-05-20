@@ -23,6 +23,7 @@ namespace Web.Controllers
         private readonly UploadManager _uploadManager = new UploadManager();
         private readonly CategoryManager _categoryManager = new CategoryManager();
         private readonly SubCategoryManager _subCategoryManager = new SubCategoryManager();
+        private readonly FileInfoManager _fileInfoManager = new FileInfoManager();
 
         #region Private Methods
 
@@ -85,7 +86,7 @@ namespace Web.Controllers
 
             if (ModelState.IsValid)
             {
-                upload.DirectoryPath = _uploadManager.GetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                upload.DirectoryPath = _uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
 
                 var alertDirectory = _uploadManager.IsPathExists(upload.DirectoryPath);
                 if (!alertDirectory.Flag)
@@ -168,7 +169,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
-            upload.FileInfos = db.FileInfos.Where(x => x.UploadId == (int) id).ToList();
+            upload.FileInfos = db.FileInfos.Where(x => x.UploadId == (int)id).ToList();
             SetDropDownPostBackData(upload);
             return View(upload);
         }
@@ -223,20 +224,49 @@ namespace Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            string directoryPath = _uploadManager.GetDirectoryPath((int) uploadId);
-            string fileTitle = _uploadManager.GetUploadTitle((int) uploadId);
+            string directoryPath = _uploadManager.GetDirectoryPath((int)uploadId);
+            string fileTitle = _uploadManager.GetUploadTitle((int)uploadId);
             string archieveName = Server.MapPath("~/" + fileTitle + ".zip");
             string temp = Server.MapPath("~/temp");
-            string[] files = _uploadManager.GetFiles((int)uploadId, directoryPath);
+            if (!Directory.Exists(temp)) Directory.CreateDirectory(temp);
+            string[] files = _uploadManager.GetFiles((int)uploadId);
 
-            
-            if(System.IO.File.Exists(archieveName)) System.IO.File.Delete(archieveName);
-            Directory.EnumerateFiles(temp).ToList().ForEach(f=>System.IO.File.Delete(f));
 
-            files.ForEach(f=> System.IO.File.Copy(f, Path.Combine(temp, Path.GetFileName(f))));
+            if (System.IO.File.Exists(archieveName)) System.IO.File.Delete(archieveName);
+
+            var directoryInfo = new DirectoryInfo(temp);
+            directoryInfo.GetFiles().ForEach(file=>file.Delete());
+            directoryInfo.GetDirectories().ForEach(dir=>dir.Delete(true));
+
+            foreach (var file in files)
+            {
+                string tempFilePath = temp + @"\" + file;
+                if (System.IO.File.Exists(tempFilePath))
+                {
+                    System.IO.File.Delete(tempFilePath);
+                }
+
+                System.IO.File.Copy(directoryPath + file, tempFilePath);
+            }
+
+            //files.ForEach(file => System.IO.File.Copy(directoryPath+file, temp+@"\"+file));
             ZipFile.CreateFromDirectory(temp, archieveName);
 
             return File(archieveName, "application/zip", fileTitle + ".zip");
+
+        }
+
+        public ActionResult DeleteFile(int? fileId)
+        {
+            if (fileId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            int uploadId = _fileInfoManager.GetUploadId((int) fileId);
+            string driveName = _fileInfoManager.GetDriveName((int)fileId);
+            string filePath = _fileInfoManager.GetUploadPath((int)fileId);
+            string fileName = _fileInfoManager.GetFileName((int)fileId);
+            bool isFileDeleted = _fileInfoManager.DeleteFile((int) fileId);
+            if(isFileDeleted) System.IO.File.Delete(driveName+filePath+fileName);
+
+            return RedirectToAction("Edit", "Uploads", new { Id = uploadId });
         }
 
         protected override void Dispose(bool disposing)

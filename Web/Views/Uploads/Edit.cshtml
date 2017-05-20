@@ -18,7 +18,7 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Upload</h4>
         <hr />
@@ -84,7 +84,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <span class="fa fa-folder"></span> @Model.Title
-        <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
+        <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" target="_blank" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
     </div>
     <div class="panel-body">
         <ul class="list-group">
@@ -92,7 +92,7 @@
             {
                 <li class="list-group-item">
                     <span class="fa fa-file-movie-o"></span> @file.FileName
-                    <a data-fileId="@file.FileInfoId" data-UploadId="@file.UploadId" href="#" class="btn btn-danger btn-xs pull-right"> <span class="fa fa-remove"></span> Delete</a>
+                    <a href="@Url.Action("DeleteFile", "Uploads", new { fileId = file.FileInfoId})" class="btn btn-danger btn-xs pull-right delete"> <span class="fa fa-remove"></span> Delete</a>
                 </li>
             }
         </ul>
@@ -102,6 +102,33 @@
     @Html.ActionLink("Back to List", "Index")
 </div>
 
-@section Scripts {
+@section styles
+{
+    @Styles.Render("~/sweetAlert/css")
+}
+@section scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/sweetAlert/js")
+    <script>
+        $(function() {
+            $(".delete").click(function(e) {
+                e.preventDefault();
+                swal({
+                    title: 'Confirmation',
+                    text: "Are you sure want to delete the file?",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                }, function (isConfirmed) {
+                    if (isConfirmed) {
+                        var href = $(".delete").attr('href');
+                        window.location.href = href;
+                    }
+                });
+            });
+        });
+    </script>
 }

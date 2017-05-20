@@ -36,7 +36,7 @@ namespace Core.DAL
             }
         }
 
-        public string GetUploadPath(int categoryId, string title)
+        public string SetUploadPath(int categoryId, string title)
         {
             using (BrothersContext db = new BrothersContext())
             {
@@ -46,7 +46,7 @@ namespace Core.DAL
 
         }
 
-        public string GetUploadPath(int categoryId, int subCategoryId, string title)
+        public string SetUploadPath(int categoryId, int subCategoryId, string title)
         {
             using (BrothersContext db = new BrothersContext())
             {

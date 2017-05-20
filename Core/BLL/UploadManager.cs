@@ -122,11 +122,10 @@ namespace Core.BLL
             return new Alert { Flag = true };
         }
 
-
-        public string GetUploadPath(int categoryId, int? subCategoryId, string title)
+        public string SetUploadPath(int categoryId, int? subCategoryId, string title)
         {
-            if (subCategoryId == null) return _uploadGateway.GetUploadPath(categoryId, title);
-            return _uploadGateway.GetUploadPath(categoryId, (int)subCategoryId, title);
+            if (subCategoryId == null) return _uploadGateway.SetUploadPath(categoryId, title);
+            return _uploadGateway.SetUploadPath(categoryId, (int)subCategoryId, title);
         }
 
         public Alert IsPathExists(string directoryPath)
@@ -169,7 +168,7 @@ namespace Core.BLL
         {
             string driveName = GetDriveName(uploadId);
             string filePath = GetFilePath(uploadId);
-            return driveName + filePath + @"\";
+            return driveName + filePath;
         }
 
         public string GetUploadTitle(int uploadId)
@@ -177,10 +176,11 @@ namespace Core.BLL
             return _uploadGateway.GetUploadTitle(uploadId);
         }
 
-        public string[] GetFiles(int uploadId, string directoryPath)
+        public string[] GetFiles(int uploadId)
         {
             var files = _uploadGateway.GetFiles(uploadId);
-            return files.Select(x => directoryPath + x.FileName).ToArray();
+            return files.Select(x => x.FileName).ToArray();
         }
+
     }
 }

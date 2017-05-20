@@ -27,6 +27,9 @@ namespace Web
                       "~/Content/bootstrap.min.css",
                       "~/Content/font-awesome.min.css",
                       "~/Content/site.css"));
+            
+            bundles.Add(new StyleBundle("~/sweetAlert/css").Include("~/Styles/sweetalert.css"));
+            bundles.Add(new ScriptBundle("~/sweetAlert/js").Include("~/Scripts/sweetalert.min.js"));
         }
     }
 }
