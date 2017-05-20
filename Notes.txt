@@ -1,0 +1,14 @@
+Edit--
+--When Laod
+--- Show Thumbnail image if exist, else show no thumnail image
+--- Show existing file from the directory
+
+
+--When Edit, 
+--- If drive letter changed, file should be copied and then delete from source
+--- If category changed, file should be copied and delete from category to new selected category
+--- If subCategory changed, file should be copied and delete from subCategory to new selected subCategory
+--- If Title changed, directory name should be changed and the files in it should also be renamed.
+--- If thumbnail changed, new thumbnail added to the database
+--- If new file added, file should be added to the directoryPath with title name
+--- If existing file deleted, file should be removed from directory [all files can be deleted]
