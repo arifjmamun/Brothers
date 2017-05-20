@@ -10,6 +10,9 @@ using Core.BLL;
 using Core.Context;
 using Core.Helper;
 using Core.Models.EntityModels;
+using Microsoft.SqlServer.Server;
+using WebGrease.Css.Extensions;
+using System.IO.Compression;
 
 namespace Web.Controllers
 {
@@ -211,6 +214,29 @@ namespace Web.Controllers
             db.Uploads.Remove(upload);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult DownLoadAll(int? uploadId)
+        {
+            if (uploadId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            string directoryPath = _uploadManager.GetDirectoryPath((int) uploadId);
+            string fileTitle = _uploadManager.GetUploadTitle((int) uploadId);
+            string archieveName = Server.MapPath("~/" + fileTitle + ".zip");
+            string temp = Server.MapPath("~/temp");
+            string[] files = _uploadManager.GetFiles((int)uploadId, directoryPath);
+
+            
+            if(System.IO.File.Exists(archieveName)) System.IO.File.Delete(archieveName);
+            Directory.EnumerateFiles(temp).ToList().ForEach(f=>System.IO.File.Delete(f));
+
+            files.ForEach(f=> System.IO.File.Copy(f, Path.Combine(temp, Path.GetFileName(f))));
+            ZipFile.CreateFromDirectory(temp, archieveName);
+
+            return File(archieveName, "application/zip", fileTitle + ".zip");
         }
 
         protected override void Dispose(bool disposing)

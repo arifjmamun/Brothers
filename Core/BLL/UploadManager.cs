@@ -144,5 +144,43 @@ namespace Core.BLL
 
             return new Alert { Flag = true };
         }
+
+        public string GetDriveName(int uploadId)
+        {
+            return _uploadGateway.GetDriveName(uploadId);
+        }
+
+        public string GetFilePath(int uploadId)
+        {
+            return _uploadGateway.GetFilePath(uploadId);
+        }
+
+        public string GetCategoryName(int uploadId)
+        {
+            return _uploadGateway.GetCategoryName(uploadId);
+        }
+
+        public string GetSubCategoryName(int uploadId)
+        {
+            return _uploadGateway.GetSubCategoryName(uploadId);
+        }
+
+        public string GetDirectoryPath(int uploadId)
+        {
+            string driveName = GetDriveName(uploadId);
+            string filePath = GetFilePath(uploadId);
+            return driveName + filePath + @"\";
+        }
+
+        public string GetUploadTitle(int uploadId)
+        {
+            return _uploadGateway.GetUploadTitle(uploadId);
+        }
+
+        public string[] GetFiles(int uploadId, string directoryPath)
+        {
+            var files = _uploadGateway.GetFiles(uploadId);
+            return files.Select(x => directoryPath + x.FileName).ToArray();
+        }
     }
 }

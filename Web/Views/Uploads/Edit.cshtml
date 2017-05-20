@@ -84,7 +84,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <span class="fa fa-folder"></span> @Model.Title
-        <a href="#" class="pull-right">Download All [.zip]</a>
+        <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
     </div>
     <div class="panel-body">
         <ul class="list-group">
@@ -92,7 +92,7 @@
             {
                 <li class="list-group-item">
                     <span class="fa fa-file-movie-o"></span> @file.FileName
-                    <span></span>
+                    <a data-fileId="@file.FileInfoId" data-UploadId="@file.UploadId" href="#" class="btn btn-danger btn-xs pull-right"> <span class="fa fa-remove"></span> Delete</a>
                 </li>
             }
         </ul>

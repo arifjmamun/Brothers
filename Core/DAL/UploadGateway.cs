@@ -63,5 +63,56 @@ namespace Core.DAL
                 return db.Uploads.FirstOrDefault(x => x.DirectoryPath.ToLower() == directoryPath.ToLower())!=null;
             }
         }
+
+        public string GetDriveName(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                return db.Uploads.Where(x => x.UploadId == uploadId).Select(x => x.Drive).First();
+            }
+        }
+
+        public string GetCategoryName(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                int categoryId =  db.Uploads.Where(x => x.UploadId == uploadId).Select(x => x.CategoryId).First();
+                return db.Categories.Where(x => x.CategoryId == categoryId).Select(x => x.CategoryName).First();
+            }
+        }
+
+        public string GetSubCategoryName(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                int? subCategoryId = db.Uploads.Where(x => x.UploadId == uploadId).Select(x => x.SubCategoryId).FirstOrDefault();
+                if (subCategoryId == null) return String.Empty;
+                return db.SubCategories.Where(x => x.SubCategoryId == subCategoryId).Select(x => x.SubCategoryName).First();
+            }
+        }
+
+        public string GetFilePath(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                return db.Uploads.Where(x => x.UploadId == uploadId).Select(x => x.DirectoryPath).First();
+            }
+        }
+
+        public string GetUploadTitle(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                return db.Uploads.Where(x => x.UploadId == uploadId).Select(x => x.Title).First();
+            }
+        }
+
+        public List<FileInfo> GetFiles(int uploadId)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                return db.FileInfos.Where(x => x.UploadId == uploadId).ToList();
+            }
+        }
     }
 }
