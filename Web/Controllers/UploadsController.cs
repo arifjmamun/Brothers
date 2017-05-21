@@ -181,8 +181,34 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
+            
             if (ModelState.IsValid)
             {
+                var previousInfo = _uploadManager.GetById(upload.UploadId);
+                //bool isModified = _uploadManager.IsUploadInfoModified(upload);
+
+                if (_uploadManager.IsUploadInfoModified(upload))
+                {
+                    string newPath = upload.Drive+_uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                    string oldPath = previousInfo.Drive+previousInfo.DirectoryPath;
+
+                    string[] files = System.IO.Directory.GetFiles(oldPath);
+
+                    if(!Directory.Exists(newPath)) Directory.CreateDirectory(newPath);
+
+                    foreach (string file in files)
+                    {
+                        //string sourceFilePath = oldPath+file;
+                        string destinationFilePath = newPath + @"\" + Path.GetFileName(file);
+
+                        System.IO.File.Move(file, destinationFilePath);
+                    }
+                    //todo
+                }
+
+                upload.LastUpdate = DateTime.Now;
+
+                //fondBug-problem//
                 db.Entry(upload).State = EntityState.Modified;
                 db.SaveChanges();
                 return View("Index");

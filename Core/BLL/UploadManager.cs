@@ -182,5 +182,13 @@ namespace Core.BLL
             return files.Select(x => x.FileName).ToArray();
         }
 
+
+        public bool IsUploadInfoModified(Upload newUpload)
+        {
+            string newPath = SetUploadPath(newUpload.CategoryId, newUpload.SubCategoryId, newUpload.Title);
+            var prevUpload = GetById(newUpload.UploadId);
+
+            return newUpload.Drive + newPath.ToLower() != prevUpload.Drive + prevUpload.DirectoryPath.ToLower();
+        }
     }
 }

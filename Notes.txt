@@ -1,7 +1,7 @@
 Edit--
 --When Laod
 --- Show Thumbnail image if exist, else show no thumnail image -- OK
---- Show existing file from the directory-- OK
+--- Show existing file from the directory --OK
 
 
 --When Edit, 

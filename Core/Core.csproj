@@ -60,7 +60,6 @@
     <Compile Include="Helper\Alert.cs" />
     <Compile Include="Helper\UploadedFile.cs" />
     <Compile Include="Helper\IntExtensions.cs" />
-    <Compile Include="Helper\Msg.cs" />
     <Compile Include="Migrations\201705171710409_Init.cs" />
     <Compile Include="Migrations\201705171710409_Init.Designer.cs">
       <DependentUpon>201705171710409_Init.cs</DependentUpon>

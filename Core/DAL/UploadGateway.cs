@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -32,7 +33,9 @@ namespace Core.DAL
         {
             using (BrothersContext db = new BrothersContext())
             {
-                return db.Uploads.Find(uploadId);
+                var upload = db.Uploads.Find(uploadId);
+                upload.FileInfos.AddRange(db.FileInfos.Where(x => x.UploadId == uploadId).ToList());
+                return upload;
             }
         }
 
