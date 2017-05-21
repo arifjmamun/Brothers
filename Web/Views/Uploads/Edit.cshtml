@@ -12,86 +12,108 @@
     var alert = (Alert)ViewBag.Alert;
 }
 
-<h2>Edit</h2>
-
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Upload</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.UploadId)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Drive, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Drive, drive, "Select One", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Drive, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CategoryId, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.CategoryId, category, "Select One", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SubCategoryId, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownListFor(model => model.SubCategoryId, subCategory, "Select One", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SubCategoryId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Thumbnail, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <input type="file" name="thumbImage" id="thumbImage" class="form-control" />
-                @Html.ValidationMessage("thumbImage", "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">Select Files</label>
-            <div class="col-md-10">
-                <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" multiple />
-                @Html.ValidationMessage("SelectedFiles", "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
-}
+<h2>Edit | Upload</h2>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span class="fa fa-folder"></span> @Model.Title
-        <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" target="_blank" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
+        Edit Uploaded Files
+    </div>
+    <div class="panel-body">
+        <div class="col-md-8">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.UploadId)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Drive, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.Drive, drive, "Select One", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Drive, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CategoryId, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.CategoryId, category, "Select One", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SubCategoryId, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(model => model.SubCategoryId, subCategory, "Select One", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SubCategoryId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Thumbnail, new { @class = "control-label col-md-3" })
+                        <div class="col-md-9">
+                            <input type="file" name="thumbImage" id="thumbImage" class="form-control" />
+                            @Html.ValidationMessage("thumbImage", "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Select Files</label>
+                        <div class="col-md-9">
+                            <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" multiple />
+                            @Html.ValidationMessage("SelectedFiles", "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-3 col-md-9">
+                            <input type="submit" value="Save" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            @if (Model.Thumbnail != null)
+            {
+                <img src="data:image;base64,@Convert.ToBase64String(Model.Thumbnail)" class="img-responsive img-thumbnail" />
+            }
+            <img src="~/Images/empty_thumb.jpg" class="img-responsive img-thumbnail" />
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>
+            <span class="fa fa-folder text-info"></span> @Model.Title
+            <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" target="_blank" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
+        </h4>
+        
     </div>
     <div class="panel-body">
         <ul class="list-group">
             @foreach (var file in Model.FileInfos)
             {
                 <li class="list-group-item">
-                    <span class="fa fa-file-movie-o"></span> @file.FileName
+                    <span class="fa fa-file"></span> @file.FileName
                     <a href="@Url.Action("DeleteFile", "Uploads", new { fileId = file.FileInfoId})" class="btn btn-danger btn-xs pull-right delete"> <span class="fa fa-remove"></span> Delete</a>
                 </li>
             }
