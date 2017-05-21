@@ -11,4 +11,4 @@ Edit--
 --- If Title changed, directory name should be changed and the files in it should also be renamed.
 --- If thumbnail changed, new thumbnail added to the database
 --- If new file added, file should be added to the directoryPath with title name
---- If existing file deleted, file should be removed from directory [all files can be deleted]
+--- If existing file deleted, file should be removed from directory [all files can be deleted] OK
