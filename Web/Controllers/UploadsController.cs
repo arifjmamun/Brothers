@@ -181,36 +181,37 @@ namespace Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
-            
+
             if (ModelState.IsValid)
             {
                 var previousInfo = _uploadManager.GetById(upload.UploadId);
-                //bool isModified = _uploadManager.IsUploadInfoModified(upload);
 
                 if (_uploadManager.IsUploadInfoModified(upload))
                 {
-                    string newPath = upload.Drive+_uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
-                    string oldPath = previousInfo.Drive+previousInfo.DirectoryPath;
+                    string newPath = upload.Drive + _uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                    string oldPath = previousInfo.Drive + previousInfo.DirectoryPath;
 
                     string[] files = System.IO.Directory.GetFiles(oldPath);
 
-                    if(!Directory.Exists(newPath)) Directory.CreateDirectory(newPath);
+                    if (!Directory.Exists(newPath)) Directory.CreateDirectory(newPath);
 
                     foreach (string file in files)
                     {
-                        //string sourceFilePath = oldPath+file;
                         string destinationFilePath = newPath + @"\" + Path.GetFileName(file);
-
                         System.IO.File.Move(file, destinationFilePath);
                     }
-                    //todo
+                }
+                upload.FileInfos = previousInfo.FileInfos;
+
+                var alertEdit = _uploadManager.Edit(upload);
+                if (!alertEdit.Flag)
+                {
+                    //error happens
+                    TempData["Alert"] = alertEdit;
+                    return RedirectToAction("Edit", "Uploads", new {Id = upload.UploadId});
                 }
 
-                upload.LastUpdate = DateTime.Now;
-
-                //fondBug-problem//
-                db.Entry(upload).State = EntityState.Modified;
-                db.SaveChanges();
+                //success
                 return View("Index");
             }
             SetDropDownPostBackData(upload);
@@ -261,8 +262,8 @@ namespace Web.Controllers
             if (System.IO.File.Exists(archieveName)) System.IO.File.Delete(archieveName);
 
             var directoryInfo = new DirectoryInfo(temp);
-            directoryInfo.GetFiles().ForEach(file=>file.Delete());
-            directoryInfo.GetDirectories().ForEach(dir=>dir.Delete(true));
+            directoryInfo.GetFiles().ForEach(file => file.Delete());
+            directoryInfo.GetDirectories().ForEach(dir => dir.Delete(true));
 
             foreach (var file in files)
             {
@@ -285,12 +286,12 @@ namespace Web.Controllers
         public ActionResult DeleteFile(int? fileId)
         {
             if (fileId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            int uploadId = _fileInfoManager.GetUploadId((int) fileId);
+            int uploadId = _fileInfoManager.GetUploadId((int)fileId);
             string driveName = _fileInfoManager.GetDriveName((int)fileId);
             string filePath = _fileInfoManager.GetUploadPath((int)fileId);
             string fileName = _fileInfoManager.GetFileName((int)fileId);
-            bool isFileDeleted = _fileInfoManager.DeleteFile((int) fileId);
-            if(isFileDeleted) System.IO.File.Delete(driveName+filePath+fileName);
+            bool isFileDeleted = _fileInfoManager.DeleteFile((int)fileId);
+            if (isFileDeleted) System.IO.File.Delete(driveName + filePath + fileName);
 
             return RedirectToAction("Edit", "Uploads", new { Id = uploadId });
         }

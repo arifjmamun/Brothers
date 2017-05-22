@@ -190,5 +190,27 @@ namespace Core.BLL
 
             return newUpload.Drive + newPath.ToLower() != prevUpload.Drive + prevUpload.DirectoryPath.ToLower();
         }
+
+        public Alert Edit(Upload upload)
+        {
+            upload.LastUpdate = DateTime.Now;
+            upload.DirectoryPath = SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+            var prevUpload = GetById(upload.UploadId);
+            if (_uploadGateway.Edit(upload, prevUpload)) return new Alert
+            {
+                Flag = true,
+                CssClass = Alert.SuccessClass,
+                Type = Alert.SuccessText,
+                Msg = "Files Info Updated!"
+            };
+            return new Alert
+            {
+                Flag = false,
+                CssClass = Alert.ErrorClass,
+                Type = Alert.ErrorText,
+                Msg = "Files Info Not Updated! Try Again!"
+            };
+
+        }
     }
 }

@@ -117,5 +117,17 @@ namespace Core.DAL
                 return db.FileInfos.Where(x => x.UploadId == uploadId).ToList();
             }
         }
+
+        public bool Edit(Upload upload, Upload prevUpload)
+        {
+            using (BrothersContext db = new BrothersContext())
+            {
+                db.Uploads.Attach(prevUpload);
+                //db.Entry(prevUpload).CurrentValues.SetValues(upload);
+                //db.Entry(upload).State = EntityState.Modified;
+                db.Entry(prevUpload).State = EntityState.Modified;
+                return db.SaveChanges() > 0;
+            }
+        }
     }
 }
