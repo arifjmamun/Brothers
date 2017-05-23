@@ -6,6 +6,7 @@ using System.Linq;
 using Core.DAL;
 using Core.Helper;
 using Core.Models.EntityModels;
+using FileInfo = Core.Models.EntityModels.FileInfo;
 
 namespace Core.BLL
 {
@@ -196,6 +197,7 @@ namespace Core.BLL
             upload.LastUpdate = DateTime.Now;
             upload.DirectoryPath = SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
             var prevUpload = GetById(upload.UploadId);
+
             if (_uploadGateway.Edit(upload, prevUpload)) return new Alert
             {
                 Flag = true,

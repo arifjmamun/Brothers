@@ -123,8 +123,17 @@ namespace Core.DAL
             using (BrothersContext db = new BrothersContext())
             {
                 db.Uploads.Attach(prevUpload);
-                //db.Entry(prevUpload).CurrentValues.SetValues(upload);
-                //db.Entry(upload).State = EntityState.Modified;
+                prevUpload.UploadId = upload.UploadId;
+                prevUpload.LastUpdate = upload.LastUpdate;
+                prevUpload.Thumbnail = upload.Thumbnail;
+                prevUpload.Title = upload.Title;
+                prevUpload.SubCategoryId = upload.SubCategoryId;
+                prevUpload.CategoryId = upload.CategoryId;
+                prevUpload.Drive = upload.Drive;
+                prevUpload.FileInfos = upload.FileInfos ?? new List<FileInfo>();
+                prevUpload.DirectoryPath = upload.DirectoryPath;
+                
+                //bugged
                 db.Entry(prevUpload).State = EntityState.Modified;
                 return db.SaveChanges() > 0;
             }
