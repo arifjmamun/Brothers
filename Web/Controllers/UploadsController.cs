@@ -201,7 +201,7 @@ namespace Web.Controllers
                         System.IO.File.Move(file, destinationFilePath);
                     }
                 }
-                upload.FileInfos = previousInfo.FileInfos;
+                //upload.FileInfos = previousInfo.FileInfos;
 
                 var alertEdit = _uploadManager.Edit(upload);
                 if (!alertEdit.Flag)

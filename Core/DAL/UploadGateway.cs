@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Context;
+using Core.Helper;
 using Core.Models.EntityModels;
 
 namespace Core.DAL
@@ -122,21 +123,31 @@ namespace Core.DAL
         {
             using (BrothersContext db = new BrothersContext())
             {
-                db.Uploads.Attach(prevUpload);
-                prevUpload.UploadId = upload.UploadId;
-                prevUpload.LastUpdate = upload.LastUpdate;
-                prevUpload.Thumbnail = upload.Thumbnail;
-                prevUpload.Title = upload.Title;
-                prevUpload.SubCategoryId = upload.SubCategoryId;
-                prevUpload.CategoryId = upload.CategoryId;
-                prevUpload.Drive = upload.Drive;
-                prevUpload.FileInfos = upload.FileInfos ?? new List<FileInfo>();
-                prevUpload.DirectoryPath = upload.DirectoryPath;
-                
-                //bugged
-                db.Entry(prevUpload).State = EntityState.Modified;
+                var exUpload = db.Uploads.AsNoTracking().Include(x => x.FileInfos).First(x => x.UploadId == upload.UploadId);
+                var exFileInfo = exUpload.FileInfos;
+                var newFileInfo = upload.FileInfos;
+
+                var addedFiles = newFileInfo.Except(exFileInfo, x => x.FileInfoId);
+                var deletedFiles = exFileInfo.Except(newFileInfo, x => x.FileInfoId);
+                var modifiedFiles = newFileInfo.Except(addedFiles, x => x.FileInfoId);
+
+                addedFiles.ToList<FileInfo>().ForEach(f=> db.Entry(f).State= EntityState.Added);
+                deletedFiles.ToList<FileInfo>().ForEach(f=>db.Entry(f).State=EntityState.Deleted);
+
+                foreach (var file in modifiedFiles)
+                {
+                    var exFile = db.FileInfos.Find(file.FileInfoId);
+                    if (exFile != null)
+                    {
+                        db.Entry(exFile).CurrentValues.SetValues(file);
+                    }
+                }
+
+                //wrong work, working but wrong way
                 return db.SaveChanges() > 0;
             }
         }
+
+        
     }
 }

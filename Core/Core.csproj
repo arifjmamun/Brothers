@@ -58,6 +58,7 @@
     <Compile Include="DAL\SubCategoryGateway.cs" />
     <Compile Include="DAL\UploadGateway.cs" />
     <Compile Include="Helper\Alert.cs" />
+    <Compile Include="Helper\LinqExtension.cs" />
     <Compile Include="Helper\UploadedFile.cs" />
     <Compile Include="Helper\IntExtensions.cs" />
     <Compile Include="Migrations\201705171710409_Init.cs" />
