@@ -195,10 +195,9 @@ namespace Core.BLL
         public Alert Edit(Upload upload)
         {
             upload.LastUpdate = DateTime.Now;
-            upload.DirectoryPath = SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
-            var prevUpload = GetById(upload.UploadId);
 
-            if (_uploadGateway.Edit(upload, prevUpload)) return new Alert
+            if (_uploadGateway.Edit(upload)) 
+            return new Alert
             {
                 Flag = true,
                 CssClass = Alert.SuccessClass,

@@ -176,19 +176,20 @@ namespace Web.Controllers
 
         // POST: Uploads/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "UploadId,Drive,Title,CategoryId,SubCategoryId,DirectoryPath,Thumbnail")] Upload upload, IEnumerable<HttpPostedFileBase> selectedFiles)
         {
-
             if (ModelState.IsValid)
             {
                 var previousInfo = _uploadManager.GetById(upload.UploadId);
+                upload.DirectoryPath = _uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                HttpPostedFileBase thumbnail = Request.Files["thumbImage"];
 
+                //checking that the path is changed or not 
                 if (_uploadManager.IsUploadInfoModified(upload))
                 {
-                    string newPath = upload.Drive + _uploadManager.SetUploadPath(upload.CategoryId, upload.SubCategoryId, upload.Title);
+                    string newPath = upload.Drive + upload.DirectoryPath;
                     string oldPath = previousInfo.Drive + previousInfo.DirectoryPath;
 
                     string[] files = System.IO.Directory.GetFiles(oldPath);
@@ -201,14 +202,60 @@ namespace Web.Controllers
                         System.IO.File.Move(file, destinationFilePath);
                     }
                 }
-                //upload.FileInfos = previousInfo.FileInfos;
+
+                //if new file added 
+                bool isFileAdded = true;
+                if (selectedFiles != null)
+                {
+                    selectedFiles.ForEach(f =>
+                    {
+                        if (f == null) isFileAdded = false;
+                        if (f != null && f.ContentLength > 0) isFileAdded = false;
+                    });
+                }
+                if (isFileAdded)
+                {
+                    string path = upload.Drive + upload.DirectoryPath;
+                    if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                    selectedFiles.ForEach(file =>
+                    {
+                        try
+                        {
+                            string fileName = upload.Title + Path.GetExtension(file.FileName);
+                            file.SaveAs(path + @"\" + fileName);
+                            upload.FileInfos.Add(new Core.Models.EntityModels.FileInfo { FileName = fileName });
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+                    });
+                }
+
+                //Check thumbnail image empty && valid or not
+                if (thumbnail.ContentLength > 0)
+                {
+                    var image = new UploadedFile(thumbnail.FileName, thumbnail.ContentLength);
+                    var alertThumb = _uploadManager.IsImageValid(image);
+                    if (!alertThumb.Flag)
+                    {
+                        ViewBag.Alert = alertThumb;
+                        SetDropDownPostBackData(upload);
+                        return View(upload);
+                    }
+                    using (var reader = new BinaryReader(thumbnail.InputStream))
+                    {
+                        upload.Thumbnail = reader.ReadBytes(thumbnail.ContentLength);
+                    }
+                }
+
 
                 var alertEdit = _uploadManager.Edit(upload);
                 if (!alertEdit.Flag)
                 {
                     //error happens
                     TempData["Alert"] = alertEdit;
-                    return RedirectToAction("Edit", "Uploads", new {Id = upload.UploadId});
+                    return RedirectToAction("Edit", "Uploads", new { Id = upload.UploadId });
                 }
 
                 //success

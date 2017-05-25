@@ -119,35 +119,39 @@ namespace Core.DAL
             }
         }
 
-        public bool Edit(Upload upload, Upload prevUpload)
+        public bool Edit(Upload upload)
         {
             using (BrothersContext db = new BrothersContext())
             {
-                var exUpload = db.Uploads.AsNoTracking().Include(x => x.FileInfos).First(x => x.UploadId == upload.UploadId);
-                var exFileInfo = exUpload.FileInfos;
-                var newFileInfo = upload.FileInfos;
+                var exUpload = db.Uploads.Include(x=>x.FileInfos).FirstOrDefault(x => x.UploadId == upload.UploadId);
 
-                var addedFiles = newFileInfo.Except(exFileInfo, x => x.FileInfoId);
-                var deletedFiles = exFileInfo.Except(newFileInfo, x => x.FileInfoId);
-                var modifiedFiles = newFileInfo.Except(addedFiles, x => x.FileInfoId);
-
-                addedFiles.ToList<FileInfo>().ForEach(f=> db.Entry(f).State= EntityState.Added);
-                deletedFiles.ToList<FileInfo>().ForEach(f=>db.Entry(f).State=EntityState.Deleted);
-
-                foreach (var file in modifiedFiles)
+                if (exUpload != null)
                 {
-                    var exFile = db.FileInfos.Find(file.FileInfoId);
-                    if (exFile != null)
+                    exUpload.LastUpdate = upload.LastUpdate;
+                    exUpload.DirectoryPath = upload.DirectoryPath;
+                    exUpload.CategoryId = upload.CategoryId;
+                    exUpload.SubCategoryId = upload.SubCategoryId;
+                    exUpload.Drive = upload.Drive;
+                    exUpload.Thumbnail = upload.Thumbnail ?? exUpload.Thumbnail;
+                    exUpload.Title = upload.Title;
+                    
+                    //Add New file
+                    upload.FileInfos.ToList().ForEach(file =>
                     {
-                        db.Entry(exFile).CurrentValues.SetValues(file);
-                    }
-                }
+                        if (exUpload.FileInfos.Any(x => x.FileInfoId != file.FileInfoId))
+                        {
+                            db.Entry(file).State = EntityState.Added;
+                            exUpload.FileInfos.Add(file);
+                        }
+                    });
 
-                //wrong work, working but wrong way
-                return db.SaveChanges() > 0;
+                    db.Uploads.Attach(exUpload);
+                    db.Entry(exUpload).State = EntityState.Modified;
+                    return db.SaveChanges() > 0;
+                }
+                return false;
             }
         }
-
         
     }
 }

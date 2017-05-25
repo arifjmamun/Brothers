@@ -9,18 +9,25 @@
     var drive = ViewBag.Drives as IEnumerable<SelectListItem>;
     var category = ViewBag.Category as IEnumerable<SelectListItem>;
     var subCategory = ViewBag.SubCategory as IEnumerable<SelectListItem>;
-    var alert = (Alert)ViewBag.Alert;
+    
 }
 
 <h2>Edit | Upload</h2>
-
+@if (ViewBag.Alert!=null)
+{
+    var alert = ViewBag.Alert;
+    <div class="@alert.CssClass">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>@alert.Type</strong> @alert.Msg
+    </div>
+}
 <div class="panel panel-default">
     <div class="panel-heading">
         Edit Uploaded Files
     </div>
     <div class="panel-body">
         <div class="col-md-8">
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("Edit", "Uploads", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
 
@@ -71,7 +78,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Select Files</label>
                         <div class="col-md-9">
-                            <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" multiple />
+                            <input class="form-control" type="file" name="SelectedFiles" id="SelectedFiles" multiple="multiple" />
                             @Html.ValidationMessage("SelectedFiles", "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -89,14 +96,13 @@
             {
                 <img src="data:image;base64,@Convert.ToBase64String(Model.Thumbnail)" class="img-responsive img-thumbnail" />
             }
-            <img src="~/Images/empty_thumb.jpg" class="img-responsive img-thumbnail" />
+            else
+            {
+                <img src="~/Images/empty_thumb.jpg" class="img-responsive img-thumbnail" />
+            }
         </div>
     </div>
 </div>
-
-
-
-
 
 
 
@@ -106,7 +112,6 @@
             <span class="fa fa-folder text-info"></span> @Model.Title
             <a href="@Url.Action("DownLoadAll", "Uploads",new {uploadId = Model.UploadId})" target="_blank" class="pull-right btn btn-xs btn-success">Download All [.zip]</a>
         </h4>
-        
     </div>
     <div class="panel-body">
         <ul class="list-group">
@@ -132,8 +137,8 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/sweetAlert/js")
     <script>
-        $(function() {
-            $(".delete").click(function(e) {
+        $(function () {
+            $(".delete").click(function (e) {
                 e.preventDefault();
                 swal({
                     title: 'Confirmation',
