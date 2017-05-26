@@ -204,15 +204,20 @@ namespace Web.Controllers
                 }
 
                 //if new file added 
-                bool isFileAdded = true;
+                bool isFileAdded = false;
                 if (selectedFiles != null)
                 {
-                    selectedFiles.ForEach(f =>
+                    foreach (var file in selectedFiles)
                     {
-                        if (f == null) isFileAdded = false;
-                        if (f != null && f.ContentLength > 0) isFileAdded = false;
-                    });
+                        if (file != null) isFileAdded = true;
+                        else
+                        {
+                            isFileAdded = false;
+                            break;
+                        }
+                    }
                 }
+
                 if (isFileAdded)
                 {
                     string path = upload.Drive + upload.DirectoryPath;
@@ -259,7 +264,7 @@ namespace Web.Controllers
                 }
 
                 //success
-                return View("Index");
+                return RedirectToAction("Index");
             }
             SetDropDownPostBackData(upload);
             return View(upload);
